@@ -1,4 +1,5 @@
 FROM php:8.2-fpm
+ARG XDEBUG_VERSION="xdebug (3)"
 
 RUN apt update
 RUN apt install -y zlib1g-dev g++ git libicu-dev zip libzip-dev zip
@@ -18,3 +19,8 @@ RUN curl -sS https://get.symfony.com/cli/installer | bash
 RUN mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
 RUN mkdir /.symfony5 \
 	&& chown 1000:1000 /.symfony5
+
+RUN yes | pecl install ${XDEBUG_VERSION} \
+    && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.remote_enable=on" >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo "xdebug.remote_autostart=off" >> /usr/local/etc/php/conf.d/xdebug.ini
